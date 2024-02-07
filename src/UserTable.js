@@ -12,11 +12,12 @@ import { CiSearch } from "react-icons/ci";
 import { ref, onValue, set, remove } from 'firebase/database';
 import { auth, database } from './firebase';
 import { signUp } from './AuthService';
+import { createUserWithEmailAndPassword, deleteUser, getAuth } from 'firebase/auth';
 
 function UserTable() {
     const [users, setUsers] = useState([]);
     const [cleared, setCleared] = React.useState(false);
-    const[datepick,setDatePick] = React.useState();
+    const [datepick, setDatePick] = React.useState();
     const [openDialog, setOpenDialog] = useState(false);
     const [newUser, setNewUser] = useState({ name: '', email: '', password: '' });
     const currentUser = auth.currentUser;
@@ -32,17 +33,16 @@ function UserTable() {
             console.error("Error updating status:", error);
         }
     };
-    const handleDelete = async (userId) => {
-        
+    const handleDelete = async (user) => {
+
 
         try {
-            const userRef = ref(database, `users/${userId}`);
+            const userRef = ref(database, `users/${user.id}`);
             remove(userRef);
-            // Remove the user from Firebase Authentication
-            await auth.deleteUser(userId);
-
-            // Remove the user's data from the database
             
+            
+            // Remove the user's data from the database
+
         } catch (error) {
             console.error("Error deleting user:", error);
         }
@@ -64,7 +64,7 @@ function UserTable() {
 
             // Add the new user's data to the database
             await set(userRef, {
-                name: newUser.name,
+                username: newUser.name,
                 email: newUser.email,
                 createdDate: new Date().toLocaleDateString(), // Add the current date
                 status: 'active',
@@ -105,7 +105,7 @@ function UserTable() {
 
 
     const handleRequestSort = (property) => {
-        console.log("property",property)
+        console.log("property", property)
         const isAsc = sortBy === property && sortOrder === 'asc';
         setSortOrder(isAsc ? 'desc' : 'asc');
         setSortBy(property);
@@ -116,13 +116,13 @@ function UserTable() {
     };
 
     const handleDateChange = (date) => {
-        if(date){
+        if (date) {
             const dateObject = new Date(date.$d);
-            const formattedDate = `${dateObject.getDate()>9?dateObject.getDate():`0${dateObject.getDate()}`}/${dateObject.getMonth() + 1>9?dateObject.getMonth()+1:`0${dateObject.getMonth()+1}`}/${dateObject.getFullYear()}`;
-            
+            const formattedDate = `${dateObject.getDate() > 9 ? dateObject.getDate() : `0${dateObject.getDate()}`}/${dateObject.getMonth() + 1 > 9 ? dateObject.getMonth() + 1 : `0${dateObject.getMonth() + 1}`}/${dateObject.getFullYear()}`;
+
             setSelectedDate(formattedDate);
         }
-        else{
+        else {
             setSelectedDate(date);
         }
     };
@@ -130,7 +130,7 @@ function UserTable() {
     const filteredUsers = users
         .filter(user => {
             return (
-                user.username.toLowerCase().includes(filter.toLowerCase()) &&
+                user.username && user.username.toLowerCase().includes(filter.toLowerCase()) &&
                 (!selectedDate || user.createdDate === selectedDate)
             );
         })
@@ -168,7 +168,7 @@ function UserTable() {
                         label="Filter by date"
                         value={datepick}
                         onChange={handleDateChange}
-                        sx={{ width: 260,marginLeft:"3rem" }}
+                        sx={{ width: 260, marginLeft: "3rem" }}
                         slotProps={{
                             field: { clearable: true, onClear: () => setCleared(true) },
                         }}
@@ -217,11 +217,10 @@ function UserTable() {
                                 <Button variant="contained" color="primary" style={{ marginBottom: "1rem", marginRight: "2rem" }} onClick={() => setOpenDialog(true)}>
                                     Add
                                 </Button>
-                                {!isCurrentUser(user.id) && ( // Show delete button only if not current user
-                                    <Button variant="contained" color="secondary" style={{ marginBottom: "1rem" }} onClick={() => handleDelete(user.id)}>
+                                
+                                    <Button variant="contained" color="secondary" style={{ marginBottom: "1rem" }} onClick={() => handleDelete(user)}>
                                         Delete
                                     </Button>
-                                )}
                             </TableCell>
                         </TableRow>
                     ))}
