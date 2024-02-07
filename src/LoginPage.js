@@ -14,15 +14,15 @@ function LoginPage() {
         setError('');
 
         try {
-            await signIn(email, password);
+            const userCredential = await signIn(email, password);
+            const user = userCredential.user;
+             localStorage.setItem('currentUser', JSON.stringify(user));
             navigate('/home');
         } catch (error) {
             setError("Incorrect Email Address and Password !");
         }
     };
-    useEffect(()=>{
-        console.log("error")
-    },[error])
+   
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>

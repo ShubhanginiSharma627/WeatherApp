@@ -22,6 +22,7 @@ function SignupPage() {
             // Sign up the user using Firebase Authentication
             const userCredential = await signUp( email, password);
             const user = userCredential.user;
+            localStorage.setItem('currentUser', JSON.stringify(user));
             const currentDate = new Date();
             const formattedDate = `${currentDate.getDate()>9?currentDate.getDate():`0${currentDate.getDate()}`}/${currentDate.getMonth() + 1>9?currentDate.getMonth()+1:`0${currentDate.getMonth()+1}`}/${currentDate.getFullYear()}`;
     
