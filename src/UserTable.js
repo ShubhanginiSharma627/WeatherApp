@@ -11,6 +11,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CiSearch } from "react-icons/ci";
 import { ref, onValue, set, remove } from 'firebase/database';
 import { auth, database } from './firebase';
+import { signUp } from './AuthService';
 
 function UserTable() {
     const [users, setUsers] = useState([]);
@@ -53,7 +54,7 @@ function UserTable() {
     const handleAddUser = async () => {
         try {
             // Create a new user in Firebase authentication
-            const userCredential = await auth.createUserWithEmailAndPassword(newUser.email, newUser.password);
+            const userCredential = await signUp(newUser.email, newUser.password);
 
             // Get the user's unique ID from authentication
             const userId = userCredential.user.uid;
