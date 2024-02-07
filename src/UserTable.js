@@ -32,19 +32,16 @@ function UserTable() {
         }
     };
     const handleDelete = async (userId) => {
-        // Check if the user is trying to delete themselves
-        if (currentUser && currentUser.uid === userId) {
-            console.error("You cannot delete yourself.");
-            return;
-        }
+        
 
         try {
+            const userRef = ref(database, `users/${userId}`);
+            remove(userRef);
             // Remove the user from Firebase Authentication
             await auth.deleteUser(userId);
 
             // Remove the user's data from the database
-            const userRef = ref(database, `users/${userId}`);
-            remove(userRef);
+            
         } catch (error) {
             console.error("Error deleting user:", error);
         }
