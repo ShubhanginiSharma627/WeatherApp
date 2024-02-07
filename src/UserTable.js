@@ -107,6 +107,7 @@ function UserTable() {
 
 
     const handleRequestSort = (property) => {
+        console.log("property",property)
         const isAsc = sortBy === property && sortOrder === 'asc';
         setSortOrder(isAsc ? 'desc' : 'asc');
         setSortBy(property);
@@ -185,9 +186,9 @@ function UserTable() {
                         <TableCell>
                             Username
                             <TableSortLabel
-                                active={sortBy === 'name'}
-                                direction={sortBy === 'name' ? sortOrder : 'asc'}
-                                onClick={() => handleRequestSort('name')}
+                                active={sortBy === 'username'}
+                                direction={sortBy === 'username' ? sortOrder : 'asc'}
+                                onClick={() => handleRequestSort('username')}
                             />
                         </TableCell>
                         <TableCell>
